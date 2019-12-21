@@ -3,6 +3,7 @@ import { ApolloProvider } from 'react-apollo';
 import { Query } from 'react-apollo';
 import client from './client';
 import { SEARCH_REPOSITORIES } from './graphql';
+import { node } from 'prop-types';
 
 const DEFAULT_STATE = {
   first: 5,
@@ -46,7 +47,23 @@ class App extends Component {
             const repositoryCount = search.repositoryCount
             const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories'
             const title = `Github RepositoryCount Search Count - ${repositoryCount} ${repositoryUnit}`
-          return <h2>{title}</h2>;
+          return(
+            <>
+            <h2>{title}</h2>
+            <ul>
+              {
+                search.edges.map(edge => {
+                  const node = edge.node
+                  return(
+                    <li key={node.id}>
+                       <a href={node.url} target="_blank">{node.name}</a>
+                    </li>
+                  )
+                })
+              }
+            </ul>
+            </>
+          ) 
           }}
         </Query>
       </ApolloProvider>
