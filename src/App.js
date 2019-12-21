@@ -3,10 +3,12 @@ import { ApolloProvider } from 'react-apollo';
 import { Query } from 'react-apollo';
 import client from './client';
 import { SEARCH_REPOSITORIES } from './graphql';
-import { node } from 'prop-types';
+//import { getNodeText } from '@testing-library/dom';
+//import { node } from 'prop-types';
 
+const PER_PAGE = 5
 const DEFAULT_STATE = {
-  first: 5,
+  first: PER_PAGE,
   after: null,
   last: null,
   before: null,
@@ -24,6 +26,15 @@ class App extends Component {
     this.setState({
       ...DEFAULT_STATE,
       query: event.target.value
+    })
+  }
+
+  goNext(search){
+    this.setState({
+      first: PER_PAGE,
+      after: search.pageInfo.endCursor,
+      last: null,
+      before: null
     })
   }
     
@@ -56,12 +67,24 @@ class App extends Component {
                   const node = edge.node
                   return(
                     <li key={node.id}>
-                       <a href={node.url} target="_blank">{node.name}</a>
+                       <a href={node.url} rel="noopener noreferrer" target="_blank">{node.name}</a>
                     </li>
                   )
                 })
               }
             </ul>
+
+            {
+              search.pageInfo.hasNextPage === true ?
+                <button
+                  onClick={this.goNext.bind(this,search)}
+                >
+                  Next
+                </button>
+                :
+                null
+            }
+            
             </>
           ) 
           }}
