@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { ApolloProvider } from 'react-apollo';
-import { Query } from 'react-apollo';
+import { ApolloProvider, Mutation, Query } from 'react-apollo';
 import client from './client';
-import { SEARCH_REPOSITORIES } from './graphql';
+import { ADD_STAR, SEARCH_REPOSITORIES } from './graphql';
 //import { getNodeText } from '@testing-library/dom';
 //import { node } from 'prop-types';
 
@@ -11,10 +10,25 @@ const StarButton = props => {
   const totalCount = props.node.stargazers.totalCount
   const viewerHasStarred = node.viewerHasStarred
   const starCount = totalCount === 1 ? "1 star" : `${totalCount} stars`
-    return(
-      <button>
+  const StarStatus = ({addStar}) => {
+    return (
+      <button
+        onClick={
+          () => addStar({
+            variables: { input: { starrableId: node.id } }
+          })
+        }
+      >
         {starCount} | {viewerHasStarred ? 'starred' : '-'}
       </button>
+    )
+  }
+    return(
+      <Mutation mutation={ADD_STAR}>
+        {
+          addStar => <StarStatus addStar={addStar} />
+        }
+      </Mutation>
     )
 }
 
@@ -61,7 +75,7 @@ class App extends Component {
     
   render() {
     const { query, first, last, before, after } = this.state;
-    console.log({query})
+    //console.log({query})
     return (
       <ApolloProvider client={client}>
         <form>
@@ -74,7 +88,7 @@ class App extends Component {
           {({ loading, error, data }) => {
             if (loading) return 'Loading...';
             if (error) return `Error! ${error.message}`;
-            console.log({ data });
+            //console.log({ data });
             const search = data.search
             const repositoryCount = search.repositoryCount
             const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories'
