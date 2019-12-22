@@ -7,8 +7,15 @@ import { SEARCH_REPOSITORIES } from './graphql';
 //import { node } from 'prop-types';
 
 const StarButton = props => {
+  const node = props.node
   const totalCount = props.node.stargazers.totalCount
-  return <button>{totalCount === 1 ? "1 star" : `${totalCount} stars`}</button>
+  const viewerHasStarred = node.viewerHasStarred
+  const starCount = totalCount === 1 ? "1 star" : `${totalCount} stars`
+    return(
+      <button>
+        {starCount} | {viewerHasStarred ? 'starred' : '-'}
+      </button>
+    )
 }
 
 const PER_PAGE = 5
